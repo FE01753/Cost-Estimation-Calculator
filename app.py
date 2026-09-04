@@ -145,6 +145,6 @@ st.markdown("""
     }
     </style>
     <div class="subtle-footer">
-        Design by nikki 🤭
+        Design by nikki 💅
     </div>
 """, unsafe_allow_html=True)
