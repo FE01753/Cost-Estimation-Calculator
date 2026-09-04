@@ -25,7 +25,7 @@ with col_c1:
 
 with col_c2:
     st.markdown("**2.SC (分判商)**")
-    sc_m210 = st.number_input("Sub-contractor Cost", value=480000.0, step=1000.0, format="%.2f")
+    sc_m210 = st.number_input("Sub-contractor Cost", value=0.0, step=1000.0, format="%.2f")
     sc_others = st.number_input("Other SC Items", value=0.0, step=100.0, format="%.2f")
     total_sc = sc_m210 + sc_others
     st.text(f"Subtotal SC: ${total_sc:,.2f}")
@@ -45,21 +45,21 @@ total_labour = labour_wages + ot_allowance
 base_direct_cost = total_ma + total_sc + total_labour + transportation + other_direct
 
 # -------------------------------------------------------------
-# 4. 總成本結算 & 報價調整區（放最底，先定義 Quotation Sum 畀上面摺疊面板計算用）
+# 4. 總成本結算 & 報價調整區（放最底，先定義 Quotation Sum A）
 # -------------------------------------------------------------
 st.markdown("---")
 st.subheader("📊 總成本與利潤結算")
 
 quotation_sum_a = st.number_input(
     "🎯 調整報價總額 (Quotation Sum A) [HKD]", 
-    value=560000.0, 
+    value=65500.0, 
     step=1000.0, 
     format="%.2f",
     help="直接在此修改開價總額，下方利潤會即時跳動"
 )
 
 # -------------------------------------------------------------
-# 5. 進階調整項目（放在結算區上方，保留摺疊，並喺入面SHOW晒實數）
+# 5. 進階調整項目（放在結算區上方，保留摺疊，並修正對應公式）
 # -------------------------------------------------------------
 with st.expander("⚙️ 調整保險比例、Bonus 與風險系數 (進階設定)", expanded=False):
     
@@ -81,12 +81,12 @@ with st.expander("⚙️ 調整保險比例、Bonus 與風險系數 (進階設�
     st.markdown("---")
     st.markdown("💡 **當前百份比換算出的實際銀碼：**")
     
-    # 即時計算實數（掛鈎當前 Quotation Sum A、Total Labour、Total MA/SC）
-    live_ec = total_labour * ec_rate
-    live_car = quotation_sum_a * car_rate
-    live_levy = live_ec * levy_rate
-    live_bonus = total_labour * bonus_pct
-    live_risk = (total_ma + total_sc) * risk_pct
+    # 依照 Excel 實際邏輯重新調整計算公式：
+    live_ec = quotation_sum_a * ec_rate               # EC 跟隨 Quotation Sum A
+    live_car = quotation_sum_a * car_rate             # CAR 跟隨 Quotation Sum A
+    live_levy = live_ec * levy_rate                   # Levy 跟隨 EC
+    live_bonus = total_labour * bonus_pct             # Bonus 跟隨 Wages
+    live_risk = quotation_sum_a * risk_pct            # Risk 跟隨 Quotation Sum A
 
     r_col1, r_col2, r_col3 = st.columns(3)
     with r_col1:
@@ -98,13 +98,13 @@ with st.expander("⚙️ 調整保險比例、Bonus 與風險系數 (進階設�
     with r_col3:
         st.text(f"• MA/SC 風險: ${live_risk:,.2f}")
 
-# 自動計算所有保險與備金實際銀碼（用於正式成本加總）
-ec_insurance = total_labour * ec_rate
+# 正式計算用變數（確保與上面摺疊面板顯示完全一致）
+ec_insurance = quotation_sum_a * ec_rate
 car_insurance = quotation_sum_a * car_rate  
 levy_insurance = ec_insurance * levy_rate
 
 bonus_amount = total_labour * bonus_pct
-risk_amount = (total_ma + total_sc) * risk_pct
+risk_amount = quotation_sum_a * risk_pct
 
 # 總成本 B 計算
 total_cost_b = base_direct_cost + ec_insurance + car_insurance + levy_insurance + bonus_amount + risk_amount
