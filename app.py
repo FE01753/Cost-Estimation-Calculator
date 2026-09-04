@@ -1,92 +1,116 @@
 import streamlit as st
 
-# 頁面基本設定
-st.set_page_config(page_title="E&M Quotation Cost Estimation", page_icon="⚡", layout="centered")
+# 1. 頁面基本設定
+st.set_page_config(
+    page_title="E&M Cost & Quotation Calculator", 
+    page_icon="⚡", 
+    layout="centered"
+)
 
-st.title("⚡ E&M Quotation Cost Estimation Calculator")
-st.markdown("請輸入合約總價及各項成本，系統將會實時計算保險、總成本及預估利潤。")
+# 標題區
+st.title("⚡ E&M Quotation Calculator")
+st.caption("Professional Cost Estimation & Profit Tracker")
 st.markdown("---")
 
-# 1. Quotation Sum (A)
-st.subheader("1. 報價總額 (Quotation Sum A)")
-quotation_sum = st.number_input("Quotation Sum (A) [HKD]", value=560000.0, step=1000.0, format="%.2f")
+# 2. Category: 1.MA & 2.SC 成本項目
+st.subheader("1 & 2. 主要成本 (MA & SC)")
 
-# 2. Category: 1.MA (物料/內部成本)
-st.subheader("2. Category: 1.MA (物料/內部成本)")
-col_ma1, col_ma2 = st.columns(2)
-with col_ma1:
+col_c1, col_c2 = st.columns(2)
+with col_c1:
+    st.markdown("**1.MA (物料成本)**")
     ma_m190 = st.number_input("Specialist Material", value=2800.0, step=100.0, format="%.2f")
-total_ma = ma_m190
-st.text(f"Total Cost for Category: 1.MA = ${total_ma:,.2f}")
+    ma_others = st.number_input("Other MA Items", value=0.0, step=100.0, format="%.2f")
+    total_ma = ma_m190 + ma_others
+    st.text(f"Subtotal MA: ${total_ma:,.2f}")
 
-# 3. Category: 2.SC (分判商)
-st.subheader("3. Category: 2.SC (分判商)")
-col_sc1, col_sc2 = st.columns(2)
-with col_sc1:
+with col_c2:
+    st.markdown("**2.SC (分判商)**")
     sc_m210 = st.number_input("Sub-contractor Cost", value=480000.0, step=1000.0, format="%.2f")
-total_sc = sc_m210
-st.text(f"Total Cost for Category: 2.SC = ${total_sc:,.2f}")
+    sc_others = st.number_input("Other SC Items", value=0.0, step=100.0, format="%.2f")
+    total_sc = sc_m210 + sc_others
+    st.text(f"Subtotal SC: ${total_sc:,.2f}")
 
-# 4. Direct Expenses & Labour
-st.subheader("4. 人工與直接開支")
-col_exp1, col_exp2 = st.columns(2)
-with col_exp1:
-    labour_wages = st.number_input("3. Labour and wages", value=12000.0, step=500.0, format="%.2f")
-    ot_allowance = st.number_input("4. OT and allowance", value=0.0, step=500.0, format="%.2f")
-with col_exp2:
-    transportation = st.number_input("5. Transportation", value=0.0, step=100.0, format="%.2f")
-    other_expenses = st.number_input("6. Other direct expenses", value=0.0, step=100.0, format="%.2f")
-
-# 5. Insurance (自動依公式計算)
-st.subheader("7. Insurance (保險費)")
-col_ins1, col_ins2, col_ins3 = st.columns(3)
-with col_ins1:
-    ec_pct = st.number_input("(EC) %", value=1.25, step=0.01, format="%.2f")
-    ec_val = quotation_sum * (ec_pct / 100.0)
-    st.write(f"EC: ${ec_val:,.2f}")
-with col_ins2:
-    car_pct = st.number_input("(CAR) %", value=0.45, step=0.01, format="%.2f") # 已修正為 0.45%
-    car_val = quotation_sum * (car_pct / 100.0)
-    st.write(f"CAR: ${car_val:,.2f}")
-with col_ins3:
-    levy_pct = st.number_input("(Levy) EC %", value=10.80, step=0.01, format="%.2f")
-    levy_val = ec_val * (levy_pct / 100.0)
-    st.write(f"Levy: ${levy_val:,.2f}")
-
-total_insurance = ec_val + car_val + levy_val
-
-# 6. Bonus & Risk
-st.subheader("8 & 9. Bonus 與風險準備金")
-col_br1, col_br2 = st.columns(2)
-with col_br1:
-    bonus_pct = st.number_input("(BONUS) Wages %", value=10.0, step=0.1, format="%.2f")
-    bonus_val = labour_wages * (bonus_pct / 100.0)
-    st.write(f"Bonus: ${bonus_val:,.2f}")
-with col_br2:
-    risk_pct = st.number_input("9. MA & SC Risk [M199] %", value=1.0, step=0.1, format="%.2f")
-    risk_val = quotation_sum * (risk_pct / 100.0)
-    st.write(f"Risk: ${risk_val:,.2f}")
-
-# --- 總結計算 (Summary) ---
-total_cost_b = total_ma + total_sc + labour_wages + ot_allowance + transportation + other_expenses + total_insurance + bonus_val + risk_val
-estimated_profits_c = quotation_sum - total_cost_b
-profit_percentage = (estimated_profits_c / quotation_sum * 100.0) if quotation_sum > 0 else 0.0
-
+# 3. 人工與直接開支
 st.markdown("---")
-st.subheader("📊 最終利潤結算 (Summary)")
+st.subheader("3. 人工與直接開支")
+col_l1, col_l2 = st.columns(2)
+with col_l1:
+    labour_wages = st.number_input("Labour and wages", value=8800.0, step=100.0, format="%.2f")
+    ot_allowance = st.number_input("OT and allowance", value=0.0, step=100.0, format="%.2f")
+with col_l2:
+    transportation = st.number_input("Transportation", value=0.0, step=100.0, format="%.2f")
+    other_direct = st.number_input("Other direct expenses", value=0.0, step=100.0, format="%.2f")
 
-col_res1, col_res2, col_res3 = st.columns(3)
-with col_res1:
-    st.metric(label="Total Cost (B)", value=f"${total_cost_b:,.2f}")
-with col_res2:
-    st.metric(label="Estimated Profits (C)", value=f"${estimated_profits_c:,.2f}")
-with col_res3:
-    st.metric(label="Profit Percentage", value=f"{profit_percentage:.2f}%")
+total_labour = labour_wages + ot_allowance
+base_direct_cost = total_ma + total_sc + total_labour + transportation + other_direct
+
+# 4. 進階調整項目（放入摺疊面板保持畫面簡潔）
+with st.expander("⚙️ 調整保險比例、Bonus 與風險系數 (進階設定)"):
+    col_ins1, col_ins2, col_ins3 = st.columns(3)
+    with col_ins1:
+        ec_rate = st.number_input("(EC) %", value=1.25, step=0.01, format="%.2f") / 100.0
+    with col_ins2:
+        car_rate = st.number_input("(CAR) % (出街價)", value=0.45, step=0.01, format="%.2f") / 100.0
+    with col_ins3:
+        levy_rate = st.number_input("(Levy) EC %", value=10.80, step=0.01, format="%.2f") / 100.0
+    
+    col_br1, col_br2 = st.columns(2)
+    with col_br1:
+        bonus_pct = st.number_input("(BONUS) Wages %", value=10.0, step=0.1, format="%.2f") / 100.0
+    with col_br2:
+        risk_pct = st.number_input("MA & SC Risk %", value=1.0, step=0.1, format="%.2f") / 100.0
+
+# -------------------------------------------------------------
+# 5. 總成本結算 & 報價調整區 (核心連動)
+# -------------------------------------------------------------
+st.markdown("---")
+st.subheader("📊 總成本與利潤結算")
+
+# 先建立一個臨時變數去預算基本保險與風險（以防變數未定義）
+# 實際計算中 CAR 需掛鈎 Quotation Sum A，因此我們把 Quotation Sum A 的輸入框放喺結算區最上方：
+
+quotation_sum_a = st.number_input(
+    "🎯 調整報價總額 (Quotation Sum A) [HKD]", 
+    value=560000.0, 
+    step=1000.0, 
+    format="%.2f",
+    help="直接在此修改開價總額，下方利潤會即時跳動"
+)
+
+# 自動計算保險與備金（CAR 跟隨最新的 quotation_sum_a）
+ec_insurance = total_labour * ec_rate
+car_insurance = quotation_sum_a * car_rate  
+levy_insurance = ec_insurance * levy_rate
+
+bonus_amount = total_labour * bonus_pct
+risk_amount = (total_ma + total_sc) * risk_pct
+
+# 總成本 B 計算
+total_cost_b = base_direct_cost + ec_insurance + car_insurance + levy_insurance + bonus_amount + risk_amount
+
+# 最終利潤結算 C
+profits_c = quotation_sum_a - total_cost_b
+profit_percentage = (profits_c / quotation_sum_a * 100.0) if quotation_sum_a > 0 else 0.0
+
+# 顯示計算結果面板
+res_col1, res_col2 = st.columns(2)
+with res_col1:
+    st.metric(label="總成本 (Total Cost B)", value=f"${total_cost_b:,.2f}")
+with res_col2:
+    st.metric(
+        label="預估淨利潤 (Profits C)", 
+        value=f"${profits_c:,.2f}", 
+        delta=f"{profit_percentage:.2f}% Margin"
+    )
+
+# 智能提示
+if profit_percentage < 8.0:
+    st.warning("⚠️ 注意：當前預估利潤率低於公司標準範圍 (8.2% - 8.5%)，請考慮調高報價總額。")
+else:
+    st.success("✅ 利潤率符合目標範圍 (8.2% - 8.5% 或以上)。")
 
 # --- 低調頁尾水印 ---
-# 建立一個空的容器作為頁尾
 footer = st.container()
 with footer:
-    st.markdown("---") # 加上一條分隔線
-    # 用 st.caption (細字) 並將文字設為淺灰色，靠右顯示
+    st.markdown("---")
     st.caption("<div style='text-align: right; color: #aaaaaa;'>Design by nikki</div>", unsafe_allow_html=True)
