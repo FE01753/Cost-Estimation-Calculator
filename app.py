@@ -44,8 +44,26 @@ with col_l2:
 total_labour = labour_wages + ot_allowance
 base_direct_cost = total_ma + total_sc + total_labour + transportation + other_direct
 
-# 4. 進階調整項目（放入摺疊面板保持畫面簡潔）
-with st.expander("⚙️ 調整保險比例、Bonus 與風險系數 (進階設定)"):
+# -------------------------------------------------------------
+# 4. 總成本結算 & 報價調整區（放最底，先定義 Quotation Sum 畀上面摺疊面板計算用）
+# -------------------------------------------------------------
+st.markdown("---")
+st.subheader("📊 總成本與利潤結算")
+
+quotation_sum_a = st.number_input(
+    "🎯 調整報價總額 (Quotation Sum A) [HKD]", 
+    value=560000.0, 
+    step=1000.0, 
+    format="%.2f",
+    help="直接在此修改開價總額，下方利潤會即時跳動"
+)
+
+# -------------------------------------------------------------
+# 5. 進階調整項目（放在結算區上方，保留摺疊，並喺入面SHOW晒實數）
+# -------------------------------------------------------------
+with st.expander("⚙️ 調整保險比例、Bonus 與風險系數 (進階設定)", expanded=False):
+    
+    # 比例輸入
     col_ins1, col_ins2, col_ins3 = st.columns(3)
     with col_ins1:
         ec_rate = st.number_input("(EC) %", value=1.25, step=0.01, format="%.2f") / 100.0
@@ -60,24 +78,27 @@ with st.expander("⚙️ 調整保險比例、Bonus 與風險系數 (進階設�
     with col_br2:
         risk_pct = st.number_input("MA & SC Risk %", value=1.0, step=0.1, format="%.2f") / 100.0
 
-# -------------------------------------------------------------
-# 5. 總成本結算 & 報價調整區 (核心連動)
-# -------------------------------------------------------------
-st.markdown("---")
-st.subheader("📊 總成本與利潤結算")
+    st.markdown("---")
+    st.markdown("💡 **當前百份比換算出的實際銀碼：**")
+    
+    # 即時計算實數（掛鈎當前 Quotation Sum A、Total Labour、Total MA/SC）
+    live_ec = total_labour * ec_rate
+    live_car = quotation_sum_a * car_rate
+    live_levy = live_ec * levy_rate
+    live_bonus = total_labour * bonus_pct
+    live_risk = (total_ma + total_sc) * risk_pct
 
-# 先建立一個臨時變數去預算基本保險與風險（以防變數未定義）
-# 實際計算中 CAR 需掛鈎 Quotation Sum A，因此我們把 Quotation Sum A 的輸入框放喺結算區最上方：
+    r_col1, r_col2, r_col3 = st.columns(3)
+    with r_col1:
+        st.text(f"• EC 保險: ${live_ec:,.2f}")
+        st.text(f"• CAR 保險: ${live_car:,.2f}")
+    with r_col2:
+        st.text(f"• Levy 徵費: ${live_levy:,.2f}")
+        st.text(f"• Bonus 金額: ${live_bonus:,.2f}")
+    with r_col3:
+        st.text(f"• MA/SC 風險: ${live_risk:,.2f}")
 
-quotation_sum_a = st.number_input(
-    "🎯 調整報價總額 (Quotation Sum A) [HKD]", 
-    value=560000.0, 
-    step=1000.0, 
-    format="%.2f",
-    help="直接在此修改開價總額，下方利潤會即時跳動"
-)
-
-# 自動計算保險與備金（CAR 跟隨最新的 quotation_sum_a）
+# 自動計算所有保險與備金實際銀碼（用於正式成本加總）
 ec_insurance = total_labour * ec_rate
 car_insurance = quotation_sum_a * car_rate  
 levy_insurance = ec_insurance * levy_rate
@@ -92,7 +113,8 @@ total_cost_b = base_direct_cost + ec_insurance + car_insurance + levy_insurance 
 profits_c = quotation_sum_a - total_cost_b
 profit_percentage = (profits_c / quotation_sum_a * 100.0) if quotation_sum_a > 0 else 0.0
 
-# 顯示計算結果面板
+# 顯示最終計算結果面板
+st.markdown("---")
 res_col1, res_col2 = st.columns(2)
 with res_col1:
     st.metric(label="總成本 (Total Cost B)", value=f"${total_cost_b:,.2f}")
