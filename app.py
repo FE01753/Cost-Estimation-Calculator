@@ -13,7 +13,7 @@ st.caption("Professional Cost Estimation & Profit Tracker")
 st.markdown("---")
 
 # 2. Category: 1.MA & 2.SC 成本項目
-st.subheader("1 & 2. 主要成本 (MA & SC)")
+st.subheader("📦 1 & 2. 主要成本 (MA & SC)")
 
 col_c1, col_c2 = st.columns(2)
 with col_c1:
@@ -32,7 +32,7 @@ with col_c2:
 
 # 3. 人工與直接開支
 st.markdown("---")
-st.subheader("3. 人工與直接開支")
+st.subheader("👷‍♂️ 3. 人工與直接開支")
 col_l1, col_l2 = st.columns(2)
 with col_l1:
     labour_wages = st.number_input("Labour and wages", value=8800.0, step=100.0, format="%.2f")
@@ -82,11 +82,11 @@ with st.expander("⚙️ 調整保險比例、Bonus 與風險系數 (進階設�
     st.markdown("💡 **當前百份比換算出的實際銀碼：**")
     
     # 依照 Excel 實際邏輯重新調整計算公式：
-    live_ec = quotation_sum_a * ec_rate               # EC 跟隨 Quotation Sum A
-    live_car = quotation_sum_a * car_rate             # CAR 跟隨 Quotation Sum A
-    live_levy = live_ec * levy_rate                   # Levy 跟隨 EC
-    live_bonus = total_labour * bonus_pct             # Bonus 跟隨 Wages
-    live_risk = quotation_sum_a * risk_pct            # Risk 跟隨 Quotation Sum A
+    live_ec = quotation_sum_a * ec_rate               
+    live_car = quotation_sum_a * car_rate             
+    live_levy = live_ec * levy_rate                   
+    live_bonus = total_labour * bonus_pct             
+    live_risk = quotation_sum_a * risk_pct            
 
     r_col1, r_col2, r_col3 = st.columns(3)
     with r_col1:
@@ -98,7 +98,7 @@ with st.expander("⚙️ 調整保險比例、Bonus 與風險系數 (進階設�
     with r_col3:
         st.text(f"• MA/SC 風險: ${live_risk:,.2f}")
 
-# 正式計算用變數（確保與上面摺疊面板顯示完全一致）
+# 正式計算用變數
 ec_insurance = quotation_sum_a * ec_rate
 car_insurance = quotation_sum_a * car_rate  
 levy_insurance = ec_insurance * levy_rate
@@ -131,8 +131,20 @@ if profit_percentage < 8.0:
 else:
     st.success("✅ 利潤率符合目標範圍 (8.2% - 8.5% 或以上)。")
 
-# --- 低調頁尾水印 ---
-footer = st.container()
-with footer:
-    st.markdown("---")
-    st.caption("<div style='text-align: right; color: #aaaaaa;'>Design by nikki</div>", unsafe_allow_html=True)
+# --- 💡 低調質感水印 (Subtle & Clean Footer) ---
+st.markdown("""
+    <style>
+    .subtle-footer {
+        margin-top: 3.5rem;
+        padding-top: 0.8rem;
+        border-top: 1px solid rgba(128, 128, 128, 0.15);
+        text-align: right;
+        color: rgba(128, 128, 128, 0.6);
+        font-size: 0.75rem;
+        letter-spacing: 0.3px;
+    }
+    </style>
+    <div class="subtle-footer">
+        Design by nikki 🤭
+    </div>
+""", unsafe_allow_html=True)
