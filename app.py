@@ -11,15 +11,20 @@ st.markdown("---")
 st.subheader("1. 報價總額 (Quotation Sum A)")
 quotation_sum = st.number_input("Quotation Sum (A) [HKD]", value=560000.0, step=1000.0, format="%.2f")
 
-# 2. Category: 1.MA (Material / Maintenance)
+# 2. Category: 1.MA (物料/內部成本)
 st.subheader("2. Category: 1.MA (物料/內部成本)")
-# 如果唔要 M190，直接將總數設定為 0（或者留空）
-total_ma = 0.0
+col_ma1, col_ma2 = st.columns(2)
+with col_ma1:
+    ma_m190 = st.number_input("Specialist Material", value=2800.0, step=100.0, format="%.2f")
+total_ma = ma_m190
 st.text(f"Total Cost for Category: 1.MA = ${total_ma:,.2f}")
 
 # 3. Category: 2.SC (分判商)
 st.subheader("3. Category: 2.SC (分判商)")
-total_sc = 0.0
+col_sc1, col_sc2 = st.columns(2)
+with col_sc1:
+    sc_m210 = st.number_input("Sub-contractor Cost", value=480000.0, step=1000.0, format="%.2f")
+total_sc = sc_m210
 st.text(f"Total Cost for Category: 2.SC = ${total_sc:,.2f}")
 
 # 4. Direct Expenses & Labour
