@@ -82,3 +82,11 @@ with col_res2:
     st.metric(label="Estimated Profits (C)", value=f"${estimated_profits_c:,.2f}")
 with col_res3:
     st.metric(label="Profit Percentage", value=f"{profit_percentage:.2f}%")
+
+# --- 低調頁尾水印 ---
+# 建立一個空的容器作為頁尾
+footer = st.container()
+with footer:
+    st.markdown("---") # 加上一條分隔線
+    # 用 st.caption (細字) 並將文字設為淺灰色，靠右顯示
+    st.caption("<div style='text-align: right; color: #aaaaaa;'>Design by nikki</div>", unsafe_allow_html=True)
