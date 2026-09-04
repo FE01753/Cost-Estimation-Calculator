@@ -9,7 +9,7 @@ st.set_page_config(
 
 # 標題區
 st.title("⚡ E&M Quotation Calculator")
-st.caption("Professional Cost Estimation & Profit Tracker")
+st.caption("請輸入合約總價及各項成本，系統將會實時計算保險、總成本及預估利潤。")
 st.markdown("---")
 
 # 2. Category: 1.MA & 2.SC 成本項目
